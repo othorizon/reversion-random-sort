@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Reversion - 随机排序的哲学观",
-  description: "随机排序的哲学观",
+  title: "Reversion - 随机排序的人生",
+  description: "Reversion - 随机排序的人生",
 };
 
 export default function RootLayout({
