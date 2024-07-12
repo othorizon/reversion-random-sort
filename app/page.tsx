@@ -1,32 +1,30 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useRevData } from "@/hooks/store";
+import { GithubIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import ResultComp from "./components/result";
 import RunningComp from "./components/running";
 import StartComp from "./components/start";
-import ResultComp from "./components/result";
-import { Button } from "@/components/ui/button";
-import { GithubIcon, PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-
-
-
-
-
 
 async function sleep(duration: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, duration);
   });
 }
 
-const audio = new Audio("/ShadowsAndDust-chosic.com_.mp3");
 export default function Home() {
   const revData = useRevData();
   const speedRef = useRef(revData.speed);
   const [play, setPlay] = useState(true);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-  const runWorker = async () => {
+  useEffect(() => {
+    speedRef.current = revData.speed;
+  }, [revData.speed]);
+
+  const runWorker = useCallback(async () => {
     while (true) {
       await sleep((11 - speedRef.current) * 100);
       if (revData.startTime < 1 || revData.endTime > 0) {
@@ -34,60 +32,74 @@ export default function Home() {
       }
       revData.shuffle();
     }
-  };
-  useEffect(() => {
-    speedRef.current = revData.speed;
-  }, [revData.speed]);
+  }, [revData]);
 
   useEffect(() => {
     if (revData.startTime > 0) {
       runWorker();
     }
-
-  }, [revData.startTime]);
+  }, [revData.startTime, runWorker]);
 
   useEffect(() => {
-    playSound();
+    function autoPlay() {
+      const _audio = new Audio("/ShadowsAndDust-chosic.com_.mp3");
+      setAudio(_audio);
+      _audio.play();
+      window.removeEventListener("click", autoPlay);
+    }
+    window.addEventListener("click", autoPlay);
+    return () => {
+      window.removeEventListener("click", autoPlay);
+    };
   }, []);
 
-  const playSound = () => {
-    audio.play();
-    setPlay(true);
-  }
-  const stopSound = () => {
-    audio.pause();
-    setPlay(false);
-  }
-
-
+  const toggleSound = useCallback(() => {
+    if (!audio) {
+      return;
+    }
+    if (play) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setPlay((e) => !e);
+  }, [audio, play]);
 
   return (
     <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start p-24">
-      <Button size="icon" className="opacity-15 hover:opacity-100 absolute right-4 top-4 rounded-full h-8 w-8" onClick={play ? stopSound : playSound}>
-        {play ? (
-          <Volume2Icon size="18" />
-        ) : (
-          <VolumeXIcon size="18" />
-        )}
-      </Button>
-      <Button size="icon" className="opacity-15 hover:opacity-100 absolute bottom-4 right-4 rounded-full">
-        <a href="https://github.com/othorizon/reversion-random-sort" target="_blank">
+      {!!audio && (
+        <Button
+          size="icon"
+          className="opacity-15 hover:opacity-100 absolute right-4 top-4 rounded-full h-8 w-8"
+          onClick={toggleSound}
+        >
+          {play ? <Volume2Icon size="18" /> : <VolumeXIcon size="18" />}
+        </Button>
+      )}
+
+      <Button
+        size="icon"
+        className="opacity-15 hover:opacity-100 absolute bottom-4 right-4 rounded-full"
+      >
+        <a
+          href="https://github.com/othorizon/reversion-random-sort"
+          target="_blank"
+        >
           <GithubIcon size="18" />
         </a>
       </Button>
       <div className="w-full select-none text-4xl md:text-4xl lg:text-6xl flex justify-between font-extralight">
         <div className="md:mr-12">{"["}</div>
-        {
-          revData.curNumbers.map((e, idx) => (
-            <div key={'n-' + idx} className="">{e.key}</div>
-          ))
-        }
+        {revData.curNumbers.map((e, idx) => (
+          <div key={"n-" + idx} className="">
+            {e.key}
+          </div>
+        ))}
         <div className="md:ml-12">{"]"}</div>
       </div>
       {revData.startTime < 1 && <StartComp />}
       {revData.startTime > 0 && revData.endTime < 1 && <RunningComp />}
       {revData.startTime > 0 && revData.endTime > 0 && <ResultComp />}
-
     </main>
   );
 }
