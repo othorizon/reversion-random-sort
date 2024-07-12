@@ -1,20 +1,17 @@
 "use client";
 
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
+  ChartTooltipContent
 } from "@/components/ui/chart";
 import { RevDataNum, useRevData } from "@/hooks/store";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { fail } from "assert";
 
 const chartConfig = {
   success: {
@@ -112,7 +109,7 @@ export function RunningChart() {
             <XAxis
               dataKey="step"
               tickLine={false}
-              axisLine={false}
+              // axisLine={false}
               tickMargin={8}
               interval={10}
               // tickFormatter={(value) => value}
