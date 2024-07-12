@@ -1,3 +1,4 @@
+import { countSuccess } from "@/lib/utils";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -12,6 +13,12 @@ export interface RevData {
     speed: number;
     //最近100次历史
     historyNumbers: RevDataNum[][];
+    max: {
+        successNum: number;
+        totalNum: number;
+        step: number
+        time: number
+    };
     init: (start: boolean) => void;
     shuffle: () => void;
     updateStartTime: (time: number) => void;
@@ -46,11 +53,25 @@ export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
                 if (history.length > MAX_HISTORY_LENGTH) {
                     history.shift();
                 }
-                const isDone = checkDone(nums);
+                const curStep = get().step + 1;
+                const successCnt = countSuccess(nums);
+                if (successCnt / nums.length > get().max.successNum / get().max.totalNum) {
+                    set({
+                        max: {
+                            successNum: successCnt,
+                            totalNum: nums.length,
+                            step: curStep,
+                            time: Date.now()
+                        }
+                    });
+                }
+
+
+                const isDone = successCnt == nums.length;
                 if (isDone) {
-                    set({ endTime: Date.now(), curNumbers: nums, historyNumbers: history, step: get().step + 1 })
+                    set({ endTime: Date.now(), curNumbers: nums, historyNumbers: history, step: curStep })
                 } else {
-                    set({ curNumbers: nums, historyNumbers: history, step: get().step + 1 })
+                    set({ curNumbers: nums, historyNumbers: history, step: curStep })
                 }
             },
             updateStartTime: (startTime: number) => set({
@@ -73,13 +94,6 @@ export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
         }
     )
 );
-
-function checkDone(curNumbers: RevDataNum[]) {
-    const x = [...curNumbers].sort((a, b) => (a.key - b.key));
-    const y = [...curNumbers].sort((a, b) => (a.index - b.index));
-    const exist = x.find((e, idx) => e.key !== y[idx].key);
-    return !exist;
-}
 
 function _shuffle(nums: RevDataNum[]) {
     for (let item of nums) {
@@ -104,5 +118,11 @@ function _init() {
         step: 0,
         speed: 5,
         historyNumbers: [],
+        max: {
+            successNum: 0,
+            totalNum: NUMBER_LENGTH,
+            step: 0,
+            time: 0
+        },
     }
 }

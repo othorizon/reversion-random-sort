@@ -1,3 +1,4 @@
+import { RevDataNum } from "@/hooks/store";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -5,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: Date, format: string) {
+export function formatDate(date: Date, format: string = 'yyyy-MM-dd HH:mm:ss') {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -23,7 +24,7 @@ export function formatDate(date: Date, format: string) {
   return format;
 }
 
-export function timeDifference(timestamp1:number, timestamp2:number) {
+export function timeDifference(timestamp1: number, timestamp2: number) {
   const timeDifferenceInMillis = Math.abs(timestamp1 - timestamp2);
 
   // 将毫秒差转换为秒
@@ -36,4 +37,10 @@ export function timeDifference(timestamp1:number, timestamp2:number) {
   const remainingSeconds = timeDifferenceInSeconds % (60 * 60 * 24);
 
   return { days: days, seconds: remainingSeconds };
+}
+
+export function countSuccess(curNumbers: RevDataNum[]) {
+  const x = [...curNumbers].sort((a, b) => (a.key - b.key));
+  const y = [...curNumbers].sort((a, b) => (a.index - b.index));
+  return x.filter((e, idx) => e.key === y[idx].key).length;
 }

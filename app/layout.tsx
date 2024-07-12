@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Reversion",
+  title: "Reversion - 随机排序的哲学观",
   description: "随机排序的哲学观",
 };
 
