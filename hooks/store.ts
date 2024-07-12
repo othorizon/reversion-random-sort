@@ -12,10 +12,12 @@ export interface RevData {
     speed: number;
     //最近100次历史
     historyNumbers: RevDataNum[][];
+    init: (start: boolean) => void;
     shuffle: () => void;
     updateStartTime: (time: number) => void;
     updateEndTime: (time: number) => void;
     updateSpeed: (speed: number) => void;
+    removeOne: () => void;
 }
 export interface RevDataNum {
     key: number;
@@ -24,13 +26,19 @@ export interface RevDataNum {
 
 
 const STORAGE_KEY = "revesion-data-v1";
-const NUMBER_LENGTH = 9;
+export const NUMBER_LENGTH = 9;
 const MAX_HISTORY_LENGTH = 100;
 export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
     persist(
         (set, get) => ({
-            ...init(),
+            ..._init(),
+            init: (start: boolean) => set({
+                ..._init(), ...(start ? { startTime: Date.now() } : null)
+            }),
             shuffle: () => {
+                if (get().startTime < 1 || get().endTime > 0) {
+                    return;
+                }
                 const nums = [...get().curNumbers];
                 const history = [...get().historyNumbers];
                 _shuffle(nums);
@@ -38,7 +46,12 @@ export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
                 if (history.length > MAX_HISTORY_LENGTH) {
                     history.shift();
                 }
-                set({ curNumbers: nums, historyNumbers: history, step: get().step + 1 })
+                const isDone = checkDone(nums);
+                if (isDone) {
+                    set({ endTime: Date.now(), curNumbers: nums, historyNumbers: history, step: get().step + 1 })
+                } else {
+                    set({ curNumbers: nums, historyNumbers: history, step: get().step + 1 })
+                }
             },
             updateStartTime: (startTime: number) => set({
                 startTime
@@ -48,6 +61,9 @@ export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
             }),
             updateSpeed: (speed: number) => set({
                 speed: Math.max(0, Math.min(10, speed))
+            }),
+            removeOne: () => set({
+                curNumbers: get().curNumbers.slice(1)
             })
 
         }),
@@ -58,6 +74,13 @@ export const useRevData = create<RevData, [["zustand/persist", RevData]]>(
     )
 );
 
+function checkDone(curNumbers: RevDataNum[]) {
+    const x = [...curNumbers].sort((a, b) => (a.key - b.key));
+    const y = [...curNumbers].sort((a, b) => (a.index - b.index));
+    const exist = x.find((e, idx) => e.key !== y[idx].key);
+    return !exist;
+}
+
 function _shuffle(nums: RevDataNum[]) {
     for (let item of nums) {
         item.index = Math.random();
@@ -66,7 +89,7 @@ function _shuffle(nums: RevDataNum[]) {
 }
 
 
-function init() {
+function _init() {
     const nums: RevDataNum[] = [];
     for (let i = 1; i <= NUMBER_LENGTH; i++) {
         nums.push({

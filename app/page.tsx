@@ -4,6 +4,7 @@ import { useRevData } from "@/hooks/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import RunningComp from "./components/running";
 import StartComp from "./components/start";
+import ResultComp from "./components/result";
 
 
 
@@ -24,7 +25,7 @@ export default function Home() {
   const runWorker = async () => {
     while (true) {
       await sleep((11 - speedRef.current) * 100);
-      if (revData.endTime > 0) {
+      if (revData.startTime < 1 || revData.endTime > 0) {
         break;
       }
       revData.shuffle();
@@ -45,22 +46,18 @@ export default function Home() {
 
   return (
     <main className="w-screen flex min-h-screen flex-col gap-20 items-center justify-start p-24">
-      <div className="text-xl md:text-4xl lg:text-6xl flex md:gap-4 lg:gap-6 font-extralight">
-        <span className="">{"["}</span>
+      <div className="w-full select-none text-4xl md:text-4xl lg:text-6xl flex justify-between font-extralight">
+        <div className="md:mr-12">{"["}</div>
         {
           revData.curNumbers.map((e, idx) => (
-            <>
-              <span key={'n' + idx} className="">{e.key}</span>
-              {idx !== revData.curNumbers.length - 1 && (
-                <span key={'c' + idx} className="">{","}</span>
-              )}
-            </>
+            <div key={'n-' + idx} className="">{e.key}</div>
           ))
         }
-        <span className="">{"]"}</span>
+        <div className="md:ml-12">{"]"}</div>
       </div>
       {revData.startTime < 1 && <StartComp />}
-      {revData.startTime > 0 && <RunningComp />}
+      {revData.startTime > 0 && revData.endTime < 1 && <RunningComp />}
+      {revData.startTime > 0 && revData.endTime > 0 && <ResultComp />}
 
     </main>
   );
