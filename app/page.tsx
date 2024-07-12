@@ -66,7 +66,7 @@ export default function Home() {
   }, [audio, play]);
 
   return (
-    <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start p-24">
+    <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start pt-24 px-16 lg:px-24">
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4">
         {!!audio && (
           <Button
