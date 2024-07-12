@@ -45,7 +45,7 @@ export default function Home() {
 
 
   return (
-    <main className="w-screen flex min-h-screen flex-col gap-20 items-center justify-start p-24">
+    <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start p-24">
       <div className="w-full select-none text-4xl md:text-4xl lg:text-6xl flex justify-between font-extralight">
         <div className="md:mr-12">{"["}</div>
         {

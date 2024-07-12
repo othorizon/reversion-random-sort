@@ -18,6 +18,7 @@ export default function ResultComp() {
                             <p>并放弃了 {removeCount} 个之后</p>
                             <p>它回归了原初的秩序</p>
                             <p>虽然，它并不完美了</p>
+                            <p>这是你的选择</p>
                         </>
                     )}
                     {removeCount < 1 && (
@@ -26,7 +27,7 @@ export default function ResultComp() {
                             <p>一直在坚持并且等待着</p>
                             <p>它最终回归了完美的样子</p>
                             <p>这是真的吗？</p>
-                            <p>你确定？</p>
+                            <p>你确定？？</p>
                         </>
                     )}
                 </div>

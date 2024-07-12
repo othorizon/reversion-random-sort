@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Reversion",
-  description: "随机排序算法",
+  description: "随机排序的哲学观",
 };
 
 export default function RootLayout({

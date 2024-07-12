@@ -1,15 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { useRevData } from "@/hooks/store";
+import { NUMBER_LENGTH, useRevData } from "@/hooks/store";
 import { formatDate } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { RunningChart } from "./running-chart";
 
 export default function RunningComp() {
     const revData = useRevData();
+    const [allowRemove, setAllowRemove] = useState(false);
+
+    useEffect(() => {
+        setAllowRemove(checkAllowRemove(revData.curNumbers.length, revData.step));
+    }, [revData.curNumbers, revData.step]);
 
 
     return (
         <>
-            <div>
+            <div className="absolute w-screen px-4 flex justify-between top-2 text-6xl text-zinc-50 select-none">
+                {"REVERSION".split("").map((e, idx) => (
+                    <div key={idx}>{e}</div>
+                ))}
+            </div>
+            <div className="select-none">
                 <div className="font-extralight text-base md:text-xl lg:text-4xl p-4  flex flex-col gap-4 items-center justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200  backdrop-blur-2xl rounded-xl border bg-gray-200 ">
                     <p>{formatDate(new Date(revData.startTime), 'yyyy-MM-dd HH:mm:ss')}，在这一刻</p>
                     <p>它已不再完美</p>
@@ -26,20 +38,22 @@ export default function RunningComp() {
                         revData.updateSpeed(val[0])
                     }}
                 />
-                {revData.step > 100 && (
+                {revData.step > 230 && (
                     <div className="mt-4 w-full flex justify-center">
-                        <Button onClick={() => revData.removeOne()}>
-                            放弃一个
+                        <Button disabled={!allowRemove} onClick={() => revData.removeOne()} className="select-none">
+                            {allowRemove ? "放弃一个" : "放弃总是容易的，再坚持一下吧"}
+
                         </Button>
                     </div>
                 )}
             </div>
-            <div className="absolute w-screen px-4 flex justify-between top-2 text-6xl text-zinc-50 select-none">
-                {"REVERSION".split("").map((e, idx) => (
-                    <div key={idx}>{e}</div>
-                ))}
-            </div>
+            <RunningChart />
 
         </>
     )
+}
+
+function checkAllowRemove(len: number, step: number) {
+    return step > Math.pow(2.3, (NUMBER_LENGTH - len + 1)) * 100;
+
 }
