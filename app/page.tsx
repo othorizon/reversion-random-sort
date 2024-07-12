@@ -24,7 +24,7 @@ export default function Home() {
     speedRef.current = revData.speed;
   }, [revData.speed]);
 
-  const runWorker = useCallback(async () => {
+  const runWorker = async () => {
     while (true) {
       await sleep((11 - speedRef.current) * 100);
       if (revData.startTime < 1 || revData.endTime > 0) {
@@ -32,13 +32,13 @@ export default function Home() {
       }
       revData.shuffle();
     }
-  }, [revData]);
+  };
 
   useEffect(() => {
     if (revData.startTime > 0) {
       runWorker();
     }
-  }, [revData.startTime, runWorker]);
+  }, [revData.startTime]);
 
   useEffect(() => {
     function autoPlay() {
@@ -67,27 +67,30 @@ export default function Home() {
 
   return (
     <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start p-24">
-      {!!audio && (
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4">
+        {!!audio && (
+          <Button
+            size="icon"
+            className="opacity-15 hover:opacity-100 rounded-full h-8 w-8"
+            onClick={toggleSound}
+          >
+            {play ? <Volume2Icon size="18" /> : <VolumeXIcon size="18" />}
+          </Button>
+        )}
+
         <Button
           size="icon"
-          className="opacity-15 hover:opacity-100 absolute right-4 top-4 rounded-full h-8 w-8"
-          onClick={toggleSound}
+          className="opacity-15 hover:opacity-100 rounded-full  h-8 w-8"
         >
-          {play ? <Volume2Icon size="18" /> : <VolumeXIcon size="18" />}
+          <a
+            href="https://github.com/othorizon/reversion-random-sort"
+            target="_blank"
+          >
+            <GithubIcon size="18" />
+          </a>
         </Button>
-      )}
+      </div>
 
-      <Button
-        size="icon"
-        className="opacity-15 hover:opacity-100 absolute bottom-4 right-4 rounded-full"
-      >
-        <a
-          href="https://github.com/othorizon/reversion-random-sort"
-          target="_blank"
-        >
-          <GithubIcon size="18" />
-        </a>
-      </Button>
       <div className="w-full select-none text-4xl md:text-4xl lg:text-6xl flex justify-between font-extralight">
         <div className="md:mr-12">{"["}</div>
         {revData.curNumbers.map((e, idx) => (
