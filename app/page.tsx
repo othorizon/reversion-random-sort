@@ -6,7 +6,8 @@ import RunningComp from "./components/running";
 import StartComp from "./components/start";
 import ResultComp from "./components/result";
 import { Button } from "@/components/ui/button";
-import { PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
+import { GithubIcon, PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 
 
@@ -64,11 +65,15 @@ export default function Home() {
     <main className="w-screen h-screen flex  flex-col gap-20 items-center justify-start p-24">
       <Button size="icon" className="opacity-15 hover:opacity-100 absolute right-4 top-4 rounded-full h-8 w-8" onClick={play ? stopSound : playSound}>
         {play ? (
-          <Volume2Icon size="14" />
+          <Volume2Icon size="18" />
         ) : (
-          <VolumeXIcon size="14" />
+          <VolumeXIcon size="18" />
         )}
-
+      </Button>
+      <Button size="icon" className="opacity-15 hover:opacity-100 absolute bottom-4 right-4 rounded-full">
+        <a href="https://github.com/othorizon/reversion-random-sort" target="_blank">
+          <GithubIcon size="18" />
+        </a>
       </Button>
       <div className="w-full select-none text-4xl md:text-4xl lg:text-6xl flex justify-between font-extralight">
         <div className="md:mr-12">{"["}</div>
